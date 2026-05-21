@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hellaspoints Tracker</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at top left, rgba(59,130,246,.12), transparent 35%),
+    linear-gradient(135deg,#f5f7fb,#e8edf5);
+}
+
+.bg-blur{
+  position:fixed;
+  inset:0;
+  backdrop-filter:blur(60px);
+  pointer-events:none;
+}
+
+.card{
+  position:relative;
+  width:430px;
+  background:rgba(255,255,255,.75);
+  border:1px solid rgba(255,255,255,.8);
+  backdrop-filter:blur(25px);
+  border-radius:34px;
+  padding:42px;
+  box-shadow:
+    0 25px 60px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.8);
+  animation:enter .9s cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes enter{
+  from{
+    opacity:0;
+    transform:translateY(30px) scale(.96);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+.logo{
+  width:58px;
+  height:58px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#2563eb,#60a5fa);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:1.6rem;
+  margin-bottom:22px;
+  box-shadow:0 16px 35px rgba(37,99,235,.28);
+}
+
+h1{
+  color:#111827;
+  font-size:2rem;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.sub{
+  color:#6b7280;
+  font-size:.97rem;
+  margin-bottom:24px;
+}
+
+.input-wrap{
+  display:flex;
+  align-items:center;
+  border-radius:24px;
+  overflow:hidden;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  transition:.25s ease;
+}
+
+.input-wrap:focus-within{
+  border-color:#3b82f6;
+  box-shadow:0 0 0 6px rgba(59,130,246,.12);
+}
+
+input{
+  flex:1;
+  border:none;
+  outline:none;
+  background:transparent;
+  padding:20px;
+  font-size:1rem;
+  font-family:inherit;
+}
+
+button{
+  width:68px;
+  height:68px;
+  border:none;
+  cursor:pointer;
+  background:linear-gradient(135deg,#2563eb,#3b82f6);
+  color:#fff;
+  font-size:1.4rem;
+  transition:.2s ease;
+}
+
+button:hover{
+  transform:scale(1.03);
+}
+
+button:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+}
+
+.video-overlay{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:none;
+  z-index:99999;
+}
+
+video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-blur"></div>
+
+<div class="card">
+  <div class="logo">📊</div>
+
+  <h1>Hellaspoints Tracker</h1>
+  <div class="sub">
+    Enter your name to continue.
+  </div>
+
+  <div class="input-wrap">
+    <input
+      id="nameInput"
+      type="text"
+      placeholder="Enter your name...."
+      autocomplete="off"
+    />
+    <button id="goBtn">→</button>
+  </div>
+</div>
+
+<div class="video-overlay" id="videoOverlay">
+  <video id="rickVideo" playsinline preload="none">
+    <source src="https://rickroll.it/rickroll.mp4" type="video/mp4">
+  </video>
+</div>
+
+<script>
+const input = document.getElementById("nameInput");
+const button = document.getElementById("goBtn");
+const overlay = document.getElementById("videoOverlay");
+const video = document.getElementById("rickVideo");
+
+function sleep(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function untypeText(el){
+  while(el.value.length > 0){
+    el.value = el.value.slice(0, -1);
+    await sleep(60);
+  }
+}
+
+async function typeText(el, text){
+  for(const char of text){
+    el.value += char;
+    await sleep(90);
+  }
+}
+
+async function startPrank(){
+  button.disabled = true;
+  input.disabled = true;
+
+  await sleep(300);
+
+  // Delete their name
+  await untypeText(input);
+
+  await sleep(250);
+
+  // Type Rick Astley
+  await typeText(input, "Rick Astley");
+
+  await sleep(700);
+
+  // Show fullscreen rickroll
+  overlay.style.display = "block";
+
+  try{
+    video.currentTime = 0;
+    await video.play();
+  } catch(err){
+    console.error(err);
+  }
+
+  // Play for 10 sec
+  await sleep(10000);
+
+  video.pause();
+  overlay.style.display = "none";
+
+  alert("Count them yourself, you bastard!");
+
+  location.reload();
+}
+
+button.addEventListener("click", () => {
+  if(input.value.trim()){
+    startPrank();
+  }
+});
+
+input.addEventListener("keydown", (e) => {
+  if(e.key === "Enter" && input.value.trim()){
+    startPrank();
+  }
+});
+</script>
+
+</body>
+</html>
